@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using DotNetService.Constants.Event;
+using DotNetService.Domain.Order.Services;
+using DotNetService.Http.API.Version1.Order.Requests;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.AspNetCore.Authorization;
@@ -13,69 +15,30 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
 {
     [ApiController]
     [Route("api/v1/orders")]
-    public class OrderControllers(NATsIntegration natsIntegration) : ControllerBase
+    public class OrderControllers(OrderService orderService) : ControllerBase
     {
-        private readonly NATsIntegration _natsIntegration = natsIntegration;
+        private readonly OrderService _orderService = orderService;
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ApiResponse> Index(Query request)
+        public async Task<ApiResponsePagination> Index(Query request)
         {
-            string subject = _natsIntegration.Subject(
-                NATsEventModuleEnum.ORDER,
-                NATsEventActionEnum.GET,
-                NATsEventStatusEnum.REQUEST
-            );
-
-            var result = await _natsIntegration.PublishAndGetReply<string, dynamic>(
-                subject,
-                Utils.JsonSerialize(request)
-            );
-            var repliedData = result.result;
-            return new ApiResponsePagination(
-                HttpStatusCode.OK,
-                new PaginationModel
-                {
-                    Data = repliedData.Data,
-                    Total = repliedData.Total,
-                    Page = repliedData.Page,
-                    PerPage = repliedData.PerPage,
-                    TotalPage = repliedData.TotalPage
-                }
-            );
+            return await _orderService.Index(request);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ApiResponse> Detail(int id)
         {
-            string subject = _natsIntegration.Subject(
-                NATsEventModuleEnum.ORDER,
-                NATsEventActionEnum.GET_BY_ID,
-                NATsEventStatusEnum.REQUEST
-            );
-            var result = await _natsIntegration.PublishAndGetReply<dynamic, dynamic>(
-                subject,
-                Utils.JsonSerialize(new { name = "test" })
-            );
+            var result = await _orderService.Detail(id);
             return new ApiResponseData(HttpStatusCode.OK, result);
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ApiResponse> Create([FromBody] dynamic request)
+        public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
-            string subject = _natsIntegration.Subject(
-                NATsEventModuleEnum.ORDER,
-                NATsEventActionEnum.CREATE,
-                NATsEventStatusEnum.SUCCESS
-            );
-
-            await _natsIntegration.Publish<dynamic>(
-                subject,
-                Utils.JsonSerialize(new { name = "test" })
-            );
-
+            await _orderService.Create(request);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }
