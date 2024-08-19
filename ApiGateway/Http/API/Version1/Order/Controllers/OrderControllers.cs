@@ -18,7 +18,7 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         private readonly NATsIntegration _natsIntegration = natsIntegration;
 
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet()]
         public async Task<ApiResponse> Index([FromQuery] dynamic request)
         {
             string subject = _natsIntegration.Subject(
@@ -31,22 +31,40 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
                 subject,
                 Utils.JsonSerialize(new { name = "test" })
             );
-            Console.WriteLine("result:");
-            Console.WriteLine(result);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData(HttpStatusCode.OK, result);
         }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ApiResponse> Detail(int id)
         {
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            string subject = _natsIntegration.Subject(
+                NATsEventModuleEnum.ORDER,
+                NATsEventActionEnum.GET_BY_ID,
+                NATsEventStatusEnum.REQUEST
+            );
+            var result = await _natsIntegration.PublishAndGetReply<dynamic, dynamic>(
+                subject,
+                Utils.JsonSerialize(new { name = "test" })
+            );
+            return new ApiResponseData(HttpStatusCode.OK, result);
         }
 
         [AllowAnonymous]
         [HttpPost]
         public async Task<ApiResponse> Create([FromBody] dynamic request)
         {
+            string subject = _natsIntegration.Subject(
+                NATsEventModuleEnum.ORDER,
+                NATsEventActionEnum.CREATE,
+                NATsEventStatusEnum.SUCCESS
+            );
+
+            await _natsIntegration.Publish<dynamic>(
+                subject,
+                Utils.JsonSerialize(new { name = "test" })
+            );
+
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }
