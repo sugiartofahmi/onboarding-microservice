@@ -18,8 +18,8 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         private readonly NATsIntegration _natsIntegration = natsIntegration;
 
         [AllowAnonymous]
-        [HttpGet()]
-        public async Task<ApiResponse> Index([FromQuery] dynamic request)
+        [HttpGet]
+        public async Task<ApiResponse> Index(Query request)
         {
             string subject = _natsIntegration.Subject(
                 NATsEventModuleEnum.ORDER,
@@ -27,11 +27,22 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
                 NATsEventStatusEnum.REQUEST
             );
 
-            var result = await _natsIntegration.PublishAndGetReply<dynamic, dynamic>(
+            var result = await _natsIntegration.PublishAndGetReply<string, dynamic>(
                 subject,
-                Utils.JsonSerialize(new { name = "test" })
+                Utils.JsonSerialize(request)
             );
-            return new ApiResponseData(HttpStatusCode.OK, result);
+            var repliedData = result.result;
+            return new ApiResponsePagination(
+                HttpStatusCode.OK,
+                new PaginationModel
+                {
+                    Data = repliedData.Data,
+                    Total = repliedData.Total,
+                    Page = repliedData.Page,
+                    PerPage = repliedData.PerPage,
+                    TotalPage = repliedData.TotalPage
+                }
+            );
         }
 
         [AllowAnonymous]

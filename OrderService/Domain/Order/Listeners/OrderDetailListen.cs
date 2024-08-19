@@ -14,7 +14,7 @@ namespace DotNetService.Domain.Order.Listeners
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
         public readonly LoggingService _loggingService = loggingService;
 
-        public IDictionary<string, object> Reply(IDictionary<string, object> data)
+        public async Task<IDictionary<string, object>> Reply(IDictionary<string, object> data)
         {
             // EXAMPLE: Do operation for reply event
             Console.WriteLine("Data  Detail:");
