@@ -2,6 +2,7 @@ using System.Net;
 using DotNetService.Constants.Logger;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.BackgroundHosted;
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Events;
 using DotNetService.Infrastructure.Filters;
 using DotNetService.Infrastructure.Integrations.Http;
@@ -196,10 +197,13 @@ namespace DotNetService
                     ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"])
                     : 1024;
 
-            // services.AddDbContextPool<IamDBContext>(
-            //     options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),
-            //     poolSize
-            // );
+            services.AddDbContextPool<OrderDBContext>(
+                options =>
+                    options.UseSqlServer(
+                        Configuration["ConnectionString:DefaultConnection1"] ?? ""
+                    ),
+                poolSize
+            );
 
             services.AddHttpContextAccessor();
 
