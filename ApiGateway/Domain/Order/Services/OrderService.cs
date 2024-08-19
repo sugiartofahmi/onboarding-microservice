@@ -52,7 +52,6 @@ namespace DotNetService.Domain.Order.Services
                 subject,
                 Utils.JsonSerialize(new { id })
             );
-
             return result?.result;
         }
 

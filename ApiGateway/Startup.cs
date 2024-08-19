@@ -1,24 +1,24 @@
-
+using System.Net;
+using System.Text.Json.Serialization;
+using DotNetService.Constants.Logger;
+using DotNetService.Exceptions;
+using DotNetService.Infrastructure.BackgroundHosted;
+using DotNetService.Infrastructure.Events;
+using DotNetService.Infrastructure.Filters;
+using DotNetService.Infrastructure.Integrations.Http;
+using DotNetService.Infrastructure.Middlewares;
+using DotNetService.Infrastructure.Queues;
+using DotNetService.Models;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NATS.Client.Core;
+using NATS.Client.Hosting;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
-using FluentValidation.AspNetCore;
 using StackExchange.Redis;
-using DotNetService.Models;
-using Microsoft.EntityFrameworkCore;
-using DotNetService.Infrastructure.Integrations.Http;
-using DotNetService.Constants.Logger;
-using Microsoft.AspNetCore.DataProtection;
-using DotNetService.Exceptions;
-using DotNetService.Infrastructure.Middlewares;
-using DotNetService.Infrastructure.Filters;
-using Microsoft.AspNetCore.Mvc;
-using NATS.Client.Hosting;
-using NATS.Client.Core;
-using DotNetService.Infrastructure.Events;
-using DotNetService.Infrastructure.Queues;
-using DotNetService.Infrastructure.BackgroundHosted;
-using System.Net;
 
 namespace DotNetService
 {
@@ -34,7 +34,9 @@ namespace DotNetService
         public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
             var cooldownBreak = int.Parse(Configuration["CircuitBreaker:External:Cooldown"] ?? "5");
-            var AllowedBroken = int.Parse(Configuration["CircuitBreaker:External:AllowedBroken"] ?? "5");
+            var AllowedBroken = int.Parse(
+                Configuration["CircuitBreaker:External:AllowedBroken"] ?? "5"
+            );
 
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -58,8 +60,9 @@ namespace DotNetService
                 var appName = SanitizeFileName(Configuration["App:Name"]);
                 var hostName = SanitizeFileName(Dns.GetHostName());
                 var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
+
+                loggingBuilder.AddFile(
+                    $"Log/{appName}-{hostName}-{currentDate}-default.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -67,14 +70,15 @@ namespace DotNetService
                         {
                             return msg.LogLevel == LogLevel.Information
                                 && !(
-                                    msg.LogName == LoggerConstant.NATS ||
-                                    msg.LogName == LoggerConstant.INTEGRATION ||
-                                    msg.LogName == LoggerConstant.ACTIVITY
+                                    msg.LogName == LoggerConstant.NATS
+                                    || msg.LogName == LoggerConstant.INTEGRATION
+                                    || msg.LogName == LoggerConstant.ACTIVITY
                                 );
                         };
                     }
                 );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-integration.log",
+                loggingBuilder.AddFile(
+                    $"Log/{appName}-{hostName}-{currentDate}-integration.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -84,7 +88,8 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-nats.log",
+                loggingBuilder.AddFile(
+                    $"Log/{appName}-{hostName}-{currentDate}-nats.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -94,7 +99,8 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-activity.log",
+                loggingBuilder.AddFile(
+                    $"Log/{appName}-{hostName}-{currentDate}-activity.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -104,7 +110,8 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-error.log",
+                loggingBuilder.AddFile(
+                    $"Log/{appName}-{hostName}-{currentDate}-error.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -120,7 +127,7 @@ namespace DotNetService
             // services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             // services.AddAWSService<IAmazonS3>();
 
-            // TODO: Install Minio for using this line of code 
+            // TODO: Install Minio for using this line of code
             // if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
             //     services.AddMinio(configureClient => configureClient
             //         .WithEndpoint(Configuration["Minio:Endpoint"])
@@ -129,22 +136,24 @@ namespace DotNetService
             // }
 
 
-            services.AddNats(1000, options =>
-            {
-
-                var opts = new NatsOpts
+            services.AddNats(
+                1000,
+                options =>
                 {
-                    Url = Configuration["Nats:Url"],
-                    AuthOpts = new NatsAuthOpts
+                    var opts = new NatsOpts
                     {
-                        Username = Configuration["Nats:Username"],
-                        Password = Configuration["Nats:Password"],
-                    },
-                    Name = Configuration["Nats:Server"]
-                };
+                        Url = Configuration["Nats:Url"],
+                        AuthOpts = new NatsAuthOpts
+                        {
+                            Username = Configuration["Nats:Username"],
+                            Password = Configuration["Nats:Password"],
+                        },
+                        Name = Configuration["Nats:Server"]
+                    };
 
-                return opts;
-            });
+                    return opts;
+                }
+            );
 
             Services(services);
 
@@ -175,18 +184,25 @@ namespace DotNetService
                     name: "AllowOrigin",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
-                                .AllowAnyMethod()
-                                .AllowAnyHeader();
-                    });
+                        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    }
+                );
             });
 
-            services.AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddFluentValidation(fvc =>
+                fvc.RegisterValidatorsFromAssemblyContaining<Startup>()
+            );
 
-            var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 1024;
+            var poolSize =
+                Configuration["ConnectionPoolSize:DefaultConnection1"] != null
+                    ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"])
+                    : 1024;
 
             services.AddDbContextPool<IamDBContext>(
-                options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),
+                options =>
+                    options.UseSqlServer(
+                        Configuration["ConnectionString:DefaultConnection1"] ?? ""
+                    ),
                 poolSize
             );
 
@@ -197,44 +213,57 @@ namespace DotNetService
                 opt.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddControllers(
-                options =>
+            services
+                .AddControllers(options =>
                 {
                     options.Filters.Add<ValidatorAttribute>();
                     options.Filters.Add<PublishNATsEndpointCallEvent>();
-                }
-            ).AddNewtonsoftJson(
-                options =>
+                })
+                .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy()
                     };
-                }
-            );
+                });
 
             var circuitBreakerPolicy = GetCircuitBreakerPolicy();
 
-            services.AddHttpClient<HttpIntegration>()
+            services
+                .AddHttpClient<HttpIntegration>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(2)) // Circuit Breaker Cooldown time
                 .AddPolicyHandler(circuitBreakerPolicy);
 
             var IsRedisEnable = bool.Parse(Configuration["Redis:IsEnable"]);
-            var redisConnectionString = Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] + ",password=" + Configuration["Redis:Password"];
+            var redisConnectionString =
+                Configuration["Redis:Host"]
+                + ':'
+                + Configuration["Redis:Port"]
+                + ",password="
+                + Configuration["Redis:Password"];
             if (IsRedisEnable)
             {
-                services.AddDataProtection()
+                services
+                    .AddDataProtection()
                     .SetApplicationName(Configuration["App:Name"] ?? "DotNetService")
                     .SetDefaultKeyLifetime(TimeSpan.FromDays(60))
-                    .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(redisConnectionString), Configuration["App:DataProtectionKey"]);
+                    .PersistKeysToStackExchangeRedis(
+                        ConnectionMultiplexer.Connect(redisConnectionString),
+                        Configuration["App:DataProtectionKey"]
+                    );
 
-                services.AddStackExchangeRedisCache(options => options.ConfigurationOptions = new ConfigurationOptions
-                {
-                    AllowAdmin = true,
-                    Password = Configuration["Redis:Password"],
-                    EndPoints = { Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] },
-                    Ssl = false
-                });
+                services.AddStackExchangeRedisCache(options =>
+                    options.ConfigurationOptions = new ConfigurationOptions
+                    {
+                        AllowAdmin = true,
+                        Password = Configuration["Redis:Password"],
+                        EndPoints =
+                        {
+                            Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"]
+                        },
+                        Ssl = false
+                    }
+                );
             }
             else
             {
@@ -277,7 +306,10 @@ namespace DotNetService
         private static string SanitizeFileName(string fileName)
         {
             var invalidChars = Path.GetInvalidFileNameChars();
-            return string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
+            return string.Join(
+                "_",
+                fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries)
+            );
         }
     }
 }
