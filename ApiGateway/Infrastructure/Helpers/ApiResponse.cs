@@ -50,13 +50,17 @@ namespace DotNetService.Infrastructure.Shareds
         public object Data { get; set; } = data;
     }
 
-    public class ApiResponseDataList(HttpStatusCode statusCode, object items) : ApiResponse
+    public class ApiResponseDataList(HttpStatusCode statusCode, object items, int count)
+        : ApiResponse
     {
         [DataMember]
         public int StatusCode { get; set; } = (int)statusCode;
 
         [DataMember(EmitDefaultValue = true)]
         public object Items { get; set; } = items;
+
+        [DataMember(EmitDefaultValue = true)]
+        public int Count { get; set; } = count;
     }
 
     public class ApiResponsePagination(HttpStatusCode statusCode, PaginationModel paginationModel)
