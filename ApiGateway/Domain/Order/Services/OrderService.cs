@@ -48,11 +48,11 @@ namespace DotNetService.Domain.Order.Services
                 NATsEventActionEnum.GET_BY_ID,
                 NATsEventStatusEnum.REQUEST
             );
-            var result = await _natsIntegration.PublishAndGetReply<string, NatsResponse<object>>(
-                subject,
-                Utils.JsonSerialize(new { id })
-            );
-            return result?.result;
+            var result = await _natsIntegration.PublishAndGetReply<
+                string,
+                NatsResponse<ApiResponseData>
+            >(subject, Utils.JsonSerialize(new { id }));
+            return result?.result?.Data;
         }
 
         public async Task Create(OrderCreateRequest request)

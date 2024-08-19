@@ -38,9 +38,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         [HttpPost]
         public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
-            Console.WriteLine("request>:");
-            Console.WriteLine(request.UserId);
-            Console.WriteLine(request.ProductId);
             await _orderService.Create(request);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }

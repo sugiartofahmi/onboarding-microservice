@@ -27,7 +27,7 @@ namespace DotNetService.Domain.Order.Listeners
             // EXAMPLE: Do operation for reply event
             var request = Utils.JsonDeserialize<OrderGetDetail>(Utils.JsonSerialize(data));
             var response = _orderService.DetailById(request.Id);
-            var reply = new Dictionary<string, object> { { "data", response }, };
+            var reply = new Dictionary<string, object> { { "Data", response }, };
 
             return reply;
         }
