@@ -15,6 +15,14 @@ namespace DotNetService.Infrastructure.Databases
         {
             GenerateUuid<Order>(modelBuilder, "Id");
             SetDefaultValue<Order>(modelBuilder, "Status", OrderStatusEnum.Pending);
+
+            modelBuilder
+                .Entity<Order>()
+                .Property(e => e.Status)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (OrderStatusEnum)Enum.Parse(typeof(OrderStatusEnum), v)
+                );
         }
 
         public override int SaveChanges()
