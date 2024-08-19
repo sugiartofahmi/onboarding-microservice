@@ -20,7 +20,7 @@ namespace DotNetService.Domain.Order.Services
             _orderStoreRepository = orderStoreRepository;
         }
 
-        public async Task<PaginationModel> Index(Query query = null)
+        public PaginationModel Index(Query query = null)
         {
             var data = this.Pagination(query);
             int count = _orderQueryRepository.Count(query);
@@ -65,6 +65,11 @@ namespace DotNetService.Domain.Order.Services
                 UpdatedAt = DateTime.Now
             };
             _orderStoreRepository.Create(data);
+        }
+
+        public List<Models.Order> GetAllHasStatusPending()
+        {
+            return _orderQueryRepository.GetAllHasStatusPending();
         }
     }
 }

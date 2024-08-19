@@ -98,5 +98,12 @@ namespace DotNetService.Domain.Order.Repositories
 
             return roleQuery.Count();
         }
+
+        public List<Models.Order> GetAllHasStatusPending()
+        {
+            return _context
+                .Orders.Where(val => val.Status == Models.OrderStatusEnum.Pending)
+                .ToList();
+        }
     }
 }

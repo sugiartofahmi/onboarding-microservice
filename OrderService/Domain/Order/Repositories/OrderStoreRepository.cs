@@ -22,10 +22,10 @@ namespace DotNetService.Domain.Order.Repositories
             _context = context;
         }
 
-        public async Task Create(Models.Order data)
+        public void Create(Models.Order data)
         {
             _context.Orders.Add(data);
-            await _context.SaveChangesAsync();
+            _context.SaveChangesAsync();
         }
 
         public void Delete(Guid id)

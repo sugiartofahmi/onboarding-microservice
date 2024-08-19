@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json.Serialization;
 using DotNetService.Constants.Logger;
+using DotNetService.Domain.Order.Schedulers;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.BackgroundHosted;
 using DotNetService.Infrastructure.Databases;
@@ -207,6 +208,8 @@ namespace DotNetService
             );
 
             services.AddHttpContextAccessor();
+
+            services.AddHostedService<OrderQueueScheduler>();
 
             services.Configure<ApiBehaviorOptions>(opt =>
             {

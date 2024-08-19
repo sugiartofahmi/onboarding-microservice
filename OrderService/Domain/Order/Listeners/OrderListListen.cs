@@ -25,7 +25,7 @@ namespace DotNetService.Domain.Order.Listeners
         public async Task<IDictionary<string, object>> Reply(IDictionary<string, object> data)
         {
             var request = Utils.JsonDeserialize<Query>(Utils.JsonSerialize(data));
-            var response = await _orderService.Index(request);
+            var response = _orderService.Index(request);
 
             return new Dictionary<string, object>
             {
