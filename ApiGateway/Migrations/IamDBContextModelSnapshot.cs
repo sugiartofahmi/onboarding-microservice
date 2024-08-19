@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetService.Migrations
 {
     [DbContext(typeof(IamDBContext))]
-    partial class DBContext1ModelSnapshot : ModelSnapshot
+    partial class IamDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
