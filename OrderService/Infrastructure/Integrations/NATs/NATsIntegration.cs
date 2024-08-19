@@ -1,16 +1,13 @@
+using DotNetService.Constants.Event;
 using DotNetService.Constants.Logger;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Shareds;
-using NATS.Client.Core;
-using DotNetService.Constants.Event;
 using DotNetService.Infrastructure.Subscriptions;
+using NATS.Client.Core;
 
 namespace DotNetService.Infrastructure.Integrations.NATs
 {
-    public class NATsIntegration(
-        ILoggerFactory loggerFactory,
-        NatsConnection natsConnection
-        )
+    public class NATsIntegration(ILoggerFactory loggerFactory, NatsConnection natsConnection)
     {
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
 
@@ -35,19 +32,31 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
         public async Task Publish<T>(string subject, T data)
         {
-            _logger.LogInformation("Publish With Subject : {Subject} | Data : {Data}", subject, data);
+            _logger.LogInformation(
+                "Publish With Subject : {Subject} | Data : {Data}",
+                subject,
+                data
+            );
             await natsConnection.PublishAsync(subject, data);
         }
 
         public async Task<R> PublishAndGetReply<T, R>(string subject, T data)
         {
-            _logger.LogInformation("Publish With Subject : {Subject} | Data : {Data}", subject, data);
+            _logger.LogInformation(
+                "Publish With Subject : {Subject} | Data : {Data}",
+                subject,
+                data
+            );
             try
             {
                 var msg = await natsConnection.RequestAsync<T, string>(subject, data);
                 var repliedData = msg.Data;
 
-                _logger.LogInformation("Get Reply With Subject : {Subject} | Reply : {Reply}", subject, repliedData);
+                _logger.LogInformation(
+                    "Get Reply With Subject : {Subject} | Reply : {Reply}",
+                    subject,
+                    repliedData
+                );
                 return Utils.JsonDeserialize<R>(repliedData);
             }
             catch (NatsException e)
@@ -57,61 +66,88 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             }
         }
 
-        public void InitListenTask<TListen>(IServiceScopeFactory serviceScopeFactory, string subject) where TListen : ISubscriptionAction<IDictionary<string, object>>
+        public void InitListenTask<TListen>(
+            IServiceScopeFactory serviceScopeFactory,
+            string subject
+        )
+            where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription of {Subject} : ", subject);
-            Task.Run(
-                async () =>
+            Task.Run(async () =>
+            {
+                await foreach (var msg in natsConnection.SubscribeAsync<string>(subject))
                 {
-                    await foreach (var msg in natsConnection.SubscribeAsync<string>(subject))
+                    try
                     {
-                        try
-                        {
-                            _logger.LogInformation("Get Subscribed Event {subject} | Data {msg.Data}", subject, msg.Data);
+                        _logger.LogInformation(
+                            "Get Subscribed Event {subject} | Data {msg.Data}",
+                            subject,
+                            msg.Data
+                        );
 
-                            using var scope = serviceScopeFactory.CreateScope();
-                            var action = scope.ServiceProvider.GetRequiredService<TListen>();
+                        using var scope = serviceScopeFactory.CreateScope();
+                        var action = scope.ServiceProvider.GetRequiredService<TListen>();
 
-                            var data = msg.Data;
-                            action.Handle(Utils.JsonDeserialize<IDictionary<string, object>>(data));
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Error On Get Subscribed {Event} | Data {msg.Data}", subject, msg.Data);
-                        }
+                        var data = msg.Data;
+                        action.Handle(Utils.JsonDeserialize<IDictionary<string, object>>(data));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error On Get Subscribed {Event} | Data {msg.Data}",
+                            subject,
+                            msg.Data
+                        );
                     }
                 }
-            );
+            });
         }
 
-        public void InitListenAndReplyTask<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAction<IDictionary<string, object>, IDictionary<string, object>>
+        public void InitListenAndReplyTask<TListenAndReply>(
+            IServiceScopeFactory serviceScopeFactory,
+            string subject
+        )
+            where TListenAndReply : IReplyAction<
+                    IDictionary<string, object>,
+                    IDictionary<string, object>
+                >
         {
             _logger.LogInformation("Start Subscription With Reply Of {Subject} : ", subject);
-            Task.Run(
-                async () =>
+            Task.Run(async () =>
+            {
+                await foreach (var msg in natsConnection.SubscribeAsync<string>(subject))
                 {
-                    await foreach (var msg in natsConnection.SubscribeAsync<string>(subject))
+                    try
                     {
-                        try
-                        {
-                            _logger.LogInformation("Get Subscribed Event {subject} | Data {msg.Data}", subject, msg.Data);
+                        _logger.LogInformation(
+                            "Get Subscribed Event {subject} | Data {msg.Data}",
+                            subject,
+                            msg.Data
+                        );
 
-                            using var scope = serviceScopeFactory.CreateScope();
-                            var action = scope.ServiceProvider.GetRequiredService<TListenAndReply>();
+                        using var scope = serviceScopeFactory.CreateScope();
+                        var action = scope.ServiceProvider.GetRequiredService<TListenAndReply>();
 
-                            var data = msg.Data;
-                            var reply = action.Reply(Utils.JsonDeserialize<IDictionary<string, object>>(data));
+                        var data = msg.Data;
+                        var reply = action.Reply(
+                            Utils.JsonDeserialize<IDictionary<string, object>>(data)
+                        );
 
-                            var jsonReply = Utils.JsonSerialize(reply);
-                            await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Error On Get Subscribed {Event} | Data {msg.Data}", subject, msg.Data);
-                        }
+                        var jsonReply = Utils.JsonSerialize(reply);
+                        await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error On Get Subscribed {Event} | Data {msg.Data}",
+                            subject,
+                            msg.Data
+                        );
                     }
                 }
-            );
+            });
         }
     }
 }

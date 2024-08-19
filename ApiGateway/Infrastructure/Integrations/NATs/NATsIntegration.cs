@@ -51,7 +51,6 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             {
                 var msg = await natsConnection.RequestAsync<T, string>(subject, data);
                 var repliedData = msg.Data;
-
                 _logger.LogInformation(
                     "Get Reply With Subject : {Subject} | Reply : {Reply}",
                     subject,

@@ -2,6 +2,7 @@ using System.Net;
 using DotNetService.Constants.Event;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Order.Requests;
+using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,13 @@ namespace DotNetService.Domain.Order.Services
                 NATsEventStatusEnum.REQUEST
             );
 
-            var result = await _natsIntegration.PublishAndGetReply<string, dynamic>(
-                subject,
-                Utils.JsonSerialize(request)
-            );
+            var result = await _natsIntegration.PublishAndGetReply<
+                string,
+                NatsResponse<PaginationModel>
+            >(subject, Utils.JsonSerialize(request));
+
             var repliedData = result.result;
+
             return new ApiResponsePagination(
                 HttpStatusCode.OK,
                 new PaginationModel
@@ -38,21 +41,22 @@ namespace DotNetService.Domain.Order.Services
             );
         }
 
-        public async Task<dynamic> Detail(int id)
+        public async Task<object> Detail(Guid id)
         {
             string subject = _natsIntegration.Subject(
                 NATsEventModuleEnum.ORDER,
                 NATsEventActionEnum.GET_BY_ID,
                 NATsEventStatusEnum.REQUEST
             );
-            var result = await _natsIntegration.PublishAndGetReply<dynamic, dynamic>(
+            var result = await _natsIntegration.PublishAndGetReply<string, NatsResponse<object>>(
                 subject,
-                Utils.JsonSerialize(new { name = "test" })
+                Utils.JsonSerialize(new { id })
             );
-            return result;
+
+            return result?.result;
         }
 
-        public async Task<ApiResponse> Create(OrderCreateRequest request)
+        public async Task Create(OrderCreateRequest request)
         {
             string subject = _natsIntegration.Subject(
                 NATsEventModuleEnum.ORDER,
@@ -60,12 +64,7 @@ namespace DotNetService.Domain.Order.Services
                 NATsEventStatusEnum.SUCCESS
             );
 
-            await _natsIntegration.Publish<dynamic>(
-                subject,
-                Utils.JsonSerialize(new { name = "test" })
-            );
-
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(request));
         }
     }
 }
