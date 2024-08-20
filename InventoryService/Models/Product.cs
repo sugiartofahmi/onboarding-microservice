@@ -7,18 +7,18 @@ namespace DotNetService.Models
     {
         [Column(name: "name")]
         [Required]
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [Column(name: "description")]
         [Required]
-        public string description { get; set; }
+        public string Description { get; set; }
 
         [Column(name: "price")]
         [Required]
-        public int price { get; set; }
+        public int Price { get; set; }
 
         [Column(name: "stock")]
         [Required]
-        public int stock { get; set; }
+        public int Stock { get; set; }
     }
 }
