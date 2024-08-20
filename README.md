@@ -33,6 +33,7 @@ $ dotnet watch run
 | `POST` | `/api/v1/orders`       | Create order.          |
 | `GET`  | `/api/v1/product`      | Retrieve all products. |
 
-## API Documentation
+## Documentation
 
 - [Postman](https://documenter.getpostman.com/view/28846904/2sA3sAhTLs)
+- [DB Diagram](https://dbdiagram.io/d/Dotnet-Microservices-66b9a75c8b4bb5230ed724e2)
