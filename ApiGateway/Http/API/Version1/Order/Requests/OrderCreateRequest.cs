@@ -9,7 +9,7 @@ namespace DotNetService.Http.API.Version1.Order.Requests
 {
     public class OrderCreateRequest
     {
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         [Required]
         public int Quantity { get; set; }
