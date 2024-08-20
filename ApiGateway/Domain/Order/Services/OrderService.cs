@@ -5,7 +5,6 @@ using DotNetService.Http.API.Version1.Order.Requests;
 using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Shareds;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Domain.Order.Services
 {
