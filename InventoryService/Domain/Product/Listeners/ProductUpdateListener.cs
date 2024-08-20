@@ -3,6 +3,7 @@ using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Product.Requests;
 using DotNetService.Domain.Product.Services;
 using DotNetService.Infrastructure.Shareds;
+using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Product.Listeners
 {
@@ -10,7 +11,7 @@ namespace DotNetService.Domain.Product.Listeners
         ILoggerFactory loggerFactory,
         LoggingService loggingService,
         ProductService productService
-    )
+    ) : ISubscriptionAction<IDictionary<string, object>>
     {
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
         public readonly LoggingService _loggingService = loggingService;
