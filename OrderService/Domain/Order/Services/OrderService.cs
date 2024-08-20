@@ -71,18 +71,21 @@ namespace DotNetService.Domain.Order.Services
             return _orderQueryRepository.GetAllHasStatusPending();
         }
 
-        public void Update(OrderCreateRequest request)
+        public void Update(OrderUpdateRequest request)
         {
-            Models.Order data = new Models.Order
+            var existingOrder = _orderQueryRepository.FindOneById(request.Id);
+            if (existingOrder == null)
             {
-                UserId = request.UserId,
-                ProductId = request.ProductId,
-                Quantity = request.Quantity,
-                Status = Models.OrderStatusEnum.Pending,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-            _orderStoreRepository.Update(data);
+                throw new UnprocessableEntityException("Order not found.");
+            }
+
+            existingOrder.UserId = request.UserId;
+            existingOrder.ProductId = request.ProductId;
+            existingOrder.Quantity = request.Quantity;
+            existingOrder.Status = request.Status;
+            existingOrder.UpdatedAt = DateTime.Now;
+
+            _orderStoreRepository.Update(existingOrder);
         }
     }
 }

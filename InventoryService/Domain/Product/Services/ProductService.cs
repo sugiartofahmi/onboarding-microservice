@@ -51,7 +51,7 @@ namespace DotNetService.Domain.Product.Services
 
         public Models.Product Detail(Guid id)
         {
-            return _productQueryRepository.FindOneById(id, true);
+            return _productQueryRepository.FindOneById(id, false);
         }
 
         public Models.Product Update(Guid id, ProductUpdateRequest dataUpdate)

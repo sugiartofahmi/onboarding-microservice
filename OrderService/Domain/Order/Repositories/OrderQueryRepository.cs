@@ -1,6 +1,7 @@
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Infrastructure.Databases;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Order.Repositories
 {
@@ -102,7 +103,8 @@ namespace DotNetService.Domain.Order.Repositories
         public List<Models.Order> GetAllHasStatusPending()
         {
             return _context
-                .Orders.Where(val => val.Status == Models.OrderStatusEnum.Pending)
+                .Orders.AsNoTracking()
+                .Where(o => o.Status == Models.OrderStatusEnum.Pending)
                 .ToList();
         }
     }

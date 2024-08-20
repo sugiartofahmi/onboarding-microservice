@@ -1,5 +1,10 @@
+using DotNetService.Constants.Event;
+using DotNetService.Domain.Order.Requests;
 using DotNetService.Domain.Order.Services;
+using DotNetService.Http.API.Version1.Responses;
+using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Queues;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Order.Schedulers
 {
@@ -9,7 +14,7 @@ namespace DotNetService.Domain.Order.Schedulers
         private readonly IServiceProvider _serviceProvider;
         private readonly BackgroundTaskQueue _taskQueue;
 
-        private readonly TimeSpan _interval = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _interval = TimeSpan.FromSeconds(20);
 
         public OrderQueueScheduler(
             ILogger<OrderQueueScheduler> logger,
@@ -39,22 +44,41 @@ namespace DotNetService.Domain.Order.Schedulers
 
         private async ValueTask ProcessPendingData(CancellationToken token)
         {
-            // _logger.LogInformation(
-            //     "Processing pending data started at: {time}",
-            //     DateTimeOffset.Now
-            // );
-
             try
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var orderService = scope.ServiceProvider.GetRequiredService<OrderService>();
-                    var datas = orderService.GetAllHasStatusPending();
-                    foreach (var data in datas)
+                    var natsIntegration =
+                        scope.ServiceProvider.GetRequiredService<NATsIntegration>();
+                    var pendingOrders = orderService.GetAllHasStatusPending();
+
+                    foreach (var order in pendingOrders)
                     {
                         if (token.IsCancellationRequested)
                             break;
-                        Console.WriteLine(data.Status);
+
+                        string subject = natsIntegration.Subject(
+                            NATsEventModuleEnum.PRODUCT,
+                            NATsEventActionEnum.GET_BY_ID,
+                            NATsEventStatusEnum.REQUEST
+                        );
+                        var result = await natsIntegration.PublishAndGetReply<
+                            string,
+                            NatsResponse<ApiResponseData>
+                        >(subject, Utils.JsonSerialize(new { id = order.ProductId }));
+                        Models.Product product = (Models.Product)(result?.result?.Data);
+
+                        OrderUpdateRequest updateOrder = new OrderUpdateRequest
+                        {
+                            Id = order.Id,
+                            UserId = order.UserId,
+                            ProductId = order.ProductId,
+                            Quantity = order.Quantity,
+                            Status = Models.OrderStatusEnum.Rejected
+                        };
+
+                        orderService.Update(updateOrder);
                     }
                 }
 

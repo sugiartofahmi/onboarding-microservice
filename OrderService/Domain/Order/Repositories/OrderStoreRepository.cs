@@ -38,8 +38,17 @@ namespace DotNetService.Domain.Order.Repositories
 
         public void Update(Models.Order data)
         {
-            _context.Entry(data).State = EntityState.Modified;
-            _context.SaveChangesAsync();
+            var existingOrder = _context.Orders.Find(data.Id);
+
+            if (existingOrder != null)
+            {
+                _context.Entry(existingOrder).CurrentValues.SetValues(data);
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new UnprocessableEntityException("No data was updated.");
+            }
         }
     }
 }

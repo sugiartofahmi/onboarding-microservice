@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DotNetService.Models;
 
 namespace DotNetService.Domain.Order.Requests
 {
-    public class OrderCreateRequest
+    public class OrderCreateRequest : Base
     {
         public Guid UserId { get; set; }
         public int Quantity { get; set; }
