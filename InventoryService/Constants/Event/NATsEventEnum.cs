@@ -1,0 +1,50 @@
+namespace DotNetService.Constants.Event
+{
+    public enum NATsEventCommon
+    {
+        ALL,
+    }
+
+    public enum NATsEventStatusEnum
+    {
+        ALL = NATsEventCommon.ALL,
+        INFO, // For info or initial process
+        PROCESS,
+        SUCCESS,
+        FAILED,
+        REQUEST // For request & reply event only
+    }
+
+    public enum NATsEventActionEnum
+    {
+        // Common action
+        ALL = NATsEventCommon.ALL,
+        DEBUG,
+        GET_BY_IDS,
+        GET,
+
+        GET_BY_ID,
+
+        CREATE,
+        UPDATE,
+        DELETE,
+        UPDATE_STATUS,
+
+        // Specific action
+        LOGIN
+    }
+
+    public enum NATsEventModuleEnum
+    {
+        ALL = NATsEventCommon.ALL,
+        LOGGER,
+        AUTH,
+        USER,
+
+        ORDER,
+
+        INVENTORY
+
+        // Add more module here
+    }
+}
