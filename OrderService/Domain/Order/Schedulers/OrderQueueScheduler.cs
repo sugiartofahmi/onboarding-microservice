@@ -75,8 +75,16 @@ namespace DotNetService.Domain.Order.Schedulers
                             UserId = order.UserId,
                             ProductId = order.ProductId,
                             Quantity = order.Quantity,
-                            Status = Models.OrderStatusEnum.Rejected
                         };
+
+                        if (product != null && product?.Stock > 0)
+                        {
+                            updateOrder.Status = Models.OrderStatusEnum.Accepted;
+                        }
+                        else
+                        {
+                            updateOrder.Status = Models.OrderStatusEnum.Rejected;
+                        }
 
                         orderService.Update(updateOrder);
                     }
