@@ -5,6 +5,7 @@ using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.Shareds;
+using Newtonsoft.Json;
 
 namespace DotNetService.Domain.Order.Schedulers
 {
@@ -14,7 +15,7 @@ namespace DotNetService.Domain.Order.Schedulers
         private readonly IServiceProvider _serviceProvider;
         private readonly BackgroundTaskQueue _taskQueue;
 
-        private readonly TimeSpan _interval = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _interval = TimeSpan.FromSeconds(30);
 
         public OrderQueueScheduler(
             ILogger<OrderQueueScheduler> logger,
@@ -67,7 +68,13 @@ namespace DotNetService.Domain.Order.Schedulers
                             string,
                             NatsResponse<ApiResponseData>
                         >(subject, Utils.JsonSerialize(new { id = order.ProductId }));
-                        Models.Product product = (Models.Product)(result?.result?.Data);
+                        Models.Product product = null;
+                        if (result?.result?.Data != null)
+                        {
+                            product = Utils.JsonDeserialize<Models.Product>(
+                                result.result.Data.ToString()
+                            );
+                        }
 
                         OrderUpdateRequest updateOrder = new OrderUpdateRequest
                         {
@@ -77,23 +84,18 @@ namespace DotNetService.Domain.Order.Schedulers
                             Quantity = order.Quantity,
                         };
 
-                        if (product != null && product?.Stock > 0)
+                        if (product == null || Convert.ToInt32(product.Stock) == 0)
                         {
-                            updateOrder.Status = Models.OrderStatusEnum.Accepted;
+                            updateOrder.Status = Models.OrderStatusEnum.Rejected;
                         }
                         else
                         {
-                            updateOrder.Status = Models.OrderStatusEnum.Rejected;
+                            updateOrder.Status = Models.OrderStatusEnum.Accepted;
                         }
 
                         orderService.Update(updateOrder);
                     }
                 }
-
-                // _logger.LogInformation(
-                //     "Finished processing pending data at: {time}",
-                //     DateTimeOffset.Now
-                // );
             }
             catch (Exception ex)
             {
