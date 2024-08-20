@@ -1,5 +1,6 @@
 using DotNetService.Constants.Event;
 using DotNetService.Domain.Logging.Listeners;
+using DotNetService.Domain.Product.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
 
 namespace DotNetService.Infrastructure.BackgroundHosted
@@ -37,6 +38,23 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             );
 
             /*==================== Other Module ====================*/
+            natsIntegration.InitListenTask<ProductCreateListener>(
+                serviceScopeFactory,
+                natsIntegration.Subject(
+                    NATsEventModuleEnum.PRODUCT,
+                    NATsEventActionEnum.CREATE,
+                    NATsEventStatusEnum.SUCCESS
+                )
+            );
+
+            natsIntegration.InitListenTask<ProductUpdateListener>(
+                serviceScopeFactory,
+                natsIntegration.Subject(
+                    NATsEventModuleEnum.PRODUCT,
+                    NATsEventActionEnum.UPDATE,
+                    NATsEventStatusEnum.SUCCESS
+                )
+            );
         }
 
         public void ListenAndReply()
@@ -50,6 +68,24 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                     NATsEventModuleEnum.LOGGER,
                     NATsEventActionEnum.DEBUG,
                     NATsEventStatusEnum.INFO
+                )
+            );
+
+            natsIntegration.InitListenAndReplyTask<ProductListListener>(
+                serviceScopeFactory,
+                natsIntegration.Subject(
+                    NATsEventModuleEnum.PRODUCT,
+                    NATsEventActionEnum.GET,
+                    NATsEventStatusEnum.REQUEST
+                )
+            );
+
+            natsIntegration.InitListenAndReplyTask<ProductDetailListener>(
+                serviceScopeFactory,
+                natsIntegration.Subject(
+                    NATsEventModuleEnum.PRODUCT,
+                    NATsEventActionEnum.GET_BY_ID,
+                    NATsEventStatusEnum.REQUEST
                 )
             );
 
