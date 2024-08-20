@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Infrastructure.Databases
 {
-    public partial class OrderDBContext : DbContext
+    public partial class ProductDBContext : DbContext
     {
-        public OrderDBContext(DbContextOptions<OrderDBContext> options)
+        public ProductDBContext(DbContextOptions<ProductDBContext> options)
             : base(options) { }
 
         public DbSet<Product> Products { get; set; }
