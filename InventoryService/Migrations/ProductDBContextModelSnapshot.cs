@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DotNetService.Migrations
 {
-    [DbContext(typeof(OrderDBContext))]
-    partial class OrderDBContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ProductDBContext))]
+    partial class ProductDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -34,27 +34,25 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_at");
-
-                    b.Property<string>("description")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
-                    b.Property<string>("name")
-                        .IsRequired()
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("name");
 
-                    b.Property<int>("price")
+                    b.Property<int?>("Price")
                         .HasColumnType("int")
                         .HasColumnName("price");
 
-                    b.Property<int>("stock")
+                    b.Property<int?>("Stock")
                         .HasColumnType("int")
                         .HasColumnName("stock");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id");
 

@@ -18,30 +18,22 @@ namespace DotNetService.Domain.Product.Services
         private readonly ProductQueryRepository _productQueryRepository = productQueryRepository;
         private readonly ProductStoreRepository _productStoreRepository = productStoreRepository;
 
-        public ApiResponse Index(ProductQueryRequest query = null)
+        public async Task<PaginationModel> Index(ProductQueryRequest query = null)
         {
-            if (query.Pagination)
-            {
-                var data = _productQueryRepository.Pagination(query);
-                int count = _productQueryRepository.Count(query);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate =
-                    new()
-                    {
-                        TotalPage = (int)Math.Ceiling(pageInCount),
-                        Page = query.Page,
-                        PerPage = query.PerPage,
-                        Data = data,
-                        Total = count
-                    };
+            var data = _productQueryRepository.Pagination(query);
+            int count = _productQueryRepository.Count(query);
+            decimal pageInCount = ((decimal)count) / query.PerPage;
+            PaginationModel paginate =
+                new()
+                {
+                    TotalPage = (int)Math.Ceiling(pageInCount),
+                    Page = query.Page,
+                    PerPage = query.PerPage,
+                    Data = data,
+                    Total = count
+                };
 
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var data = _productQueryRepository.Pagination(query);
-                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
-            }
+            return paginate;
         }
 
         public Models.Product Create(ProductCreateRequest request)

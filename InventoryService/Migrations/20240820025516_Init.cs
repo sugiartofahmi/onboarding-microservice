@@ -14,10 +14,10 @@ namespace DotNetService.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    price = table.Column<int>(type: "int", nullable: false),
-                    stock = table.Column<int>(type: "int", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    price = table.Column<int>(type: "int", nullable: true),
+                    stock = table.Column<int>(type: "int", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
