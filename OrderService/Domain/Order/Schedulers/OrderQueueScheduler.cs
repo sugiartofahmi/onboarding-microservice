@@ -14,7 +14,7 @@ namespace DotNetService.Domain.Order.Schedulers
         private readonly IServiceProvider _serviceProvider;
         private readonly BackgroundTaskQueue _taskQueue;
 
-        private readonly TimeSpan _interval = TimeSpan.FromSeconds(20);
+        private readonly TimeSpan _interval = TimeSpan.FromMinutes(10);
 
         public OrderQueueScheduler(
             ILogger<OrderQueueScheduler> logger,
