@@ -4,6 +4,7 @@ using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Order.Services;
 using DotNetService.Domain.Permission.Services;
+using DotNetService.Domain.Product.Services;
 using DotNetService.Domain.Role.Services;
 using DotNetService.Domain.User.Services;
 using DotNetService.Domain.UserRole.Services;
@@ -22,6 +23,8 @@ namespace DotNetService
             services.AddScoped<RoleService>();
             services.AddScoped<UserRoleService>();
             services.AddScoped<OrderService>();
+
+            services.AddScoped<ProductService>();
 
             services.AddScoped<LoggingService>();
         }

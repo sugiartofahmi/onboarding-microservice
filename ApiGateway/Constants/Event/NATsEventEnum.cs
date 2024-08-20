@@ -43,7 +43,7 @@ namespace DotNetService.Constants.Event
 
         ORDER,
 
-        INVENTORY
+        PRODUCT,
 
         // Add more module here
     }
