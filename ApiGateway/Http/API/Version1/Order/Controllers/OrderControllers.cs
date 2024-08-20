@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DotNetService.Constants.Event;
 using DotNetService.Domain.Order.Services;
@@ -19,14 +20,12 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
     {
         private readonly OrderService _orderService = orderService;
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ApiResponsePagination> Index(Query request)
         {
             return await _orderService.Index(request);
         }
 
-        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ApiResponse> Detail(Guid id)
         {
@@ -34,10 +33,11 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
             return new ApiResponseData(HttpStatusCode.OK, result);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            request.UserId = Guid.Parse(userId);
             await _orderService.Create(request);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }

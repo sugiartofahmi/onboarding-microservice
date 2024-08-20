@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using DotNetService.Domain.Auth.Services;
+using DotNetService.Http.API.Version1.User;
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.AspNetCore.Authorization;
-using DotNetService.Http.API.Version1.User;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Http.API.Version1.Auth
 {
     [ApiController]
     [Route("api/v1/auth")]
-    public class AuthController(
-        AuthService authService
-        ) : ControllerBase
+    public class AuthController(AuthService authService) : ControllerBase
     {
         private readonly AuthService _authService = authService;
 

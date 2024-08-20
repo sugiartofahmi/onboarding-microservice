@@ -12,7 +12,6 @@ namespace DotNetService.Http.API.Version1.Product.Controllers
     {
         private readonly ProductService _productService = productService;
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ApiResponsePagination> Index(ProductQueryRequest request)
         {
