@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using DotNetService.Models;
+using DotNetService.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Infrastructure.Databases
@@ -14,6 +15,8 @@ namespace DotNetService.Infrastructure.Databases
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             GenerateUuid<Product>(modelBuilder, "Id");
+
+            new ProductSeeder(modelBuilder);
         }
 
         public override int SaveChanges()
