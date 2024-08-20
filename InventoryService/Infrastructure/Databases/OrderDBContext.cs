@@ -9,20 +9,11 @@ namespace DotNetService.Infrastructure.Databases
         public OrderDBContext(DbContextOptions<OrderDBContext> options)
             : base(options) { }
 
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            GenerateUuid<Order>(modelBuilder, "Id");
-            SetDefaultValue<Order>(modelBuilder, "Status", OrderStatusEnum.Pending);
-
-            modelBuilder
-                .Entity<Order>()
-                .Property(e => e.Status)
-                .HasConversion(
-                    v => v.ToString(),
-                    v => (OrderStatusEnum)Enum.Parse(typeof(OrderStatusEnum), v)
-                );
+            GenerateUuid<Product>(modelBuilder, "Id");
         }
 
         public override int SaveChanges()

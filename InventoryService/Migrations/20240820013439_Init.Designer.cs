@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetService.Migrations
 {
     [DbContext(typeof(OrderDBContext))]
-    [Migration("20240819021821_Init")]
+    [Migration("20240820013439_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace DotNetService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("DotNetService.Models.Order", b =>
+            modelBuilder.Entity("DotNetService.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,33 +36,33 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("product_id");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int")
-                        .HasColumnName("quantity");
-
-                    b.Property<int?>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("status");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("user_id");
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("price")
+                        .HasColumnType("int")
+                        .HasColumnName("price");
+
+                    b.Property<int>("stock")
+                        .HasColumnType("int")
+                        .HasColumnName("stock");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Id");
 
-                    b.ToTable("orders");
+                    b.ToTable("Products");
                 });
 #pragma warning restore 612, 618
         }

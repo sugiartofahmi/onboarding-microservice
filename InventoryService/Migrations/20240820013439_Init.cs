@@ -10,32 +10,32 @@ namespace DotNetService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "orders",
+                name: "Products",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    quantity = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: true, defaultValue: 0),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    price = table.Column<int>(type: "int", nullable: false),
+                    stock = table.Column<int>(type: "int", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orders", x => x.id);
+                    table.PrimaryKey("PK_Products", x => x.id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_id",
-                table: "orders",
+                name: "IX_Products_id",
+                table: "Products",
                 column: "id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "orders");
+                name: "Products");
         }
     }
 }
