@@ -7,6 +7,12 @@ Dot Net Microservice Onboarding [DOT Indonesia](https://www.dot.co.id/)
 - Use Dot Net 8.0.303
 - Copy file appsettings.example.json, rename to appsettings.json and adjust the configuration
 
+## Directory Structure
+
+- ApiGateway
+- OrderService
+- InventoryService
+
 ## Running the app
 
 ```bash
