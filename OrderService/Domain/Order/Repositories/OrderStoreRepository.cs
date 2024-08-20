@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Threading.Tasks;
-using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Databases;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Order.Repositories
 {
@@ -39,6 +34,12 @@ namespace DotNetService.Domain.Order.Repositories
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
+        }
+
+        public void Update(Models.Order data)
+        {
+            _context.Entry(data).State = EntityState.Modified;
+            _context.SaveChangesAsync();
         }
     }
 }

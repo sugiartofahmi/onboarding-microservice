@@ -52,14 +52,13 @@ namespace DotNetService.Domain.Order.Services
             _orderStoreRepository.Delete(id);
         }
 
-        public void Create(OrderCreateRequest dataCreate)
+        public void Create(OrderCreateRequest request)
         {
-            Console.WriteLine("data:");
             Models.Order data = new Models.Order
             {
-                UserId = dataCreate.UserId,
-                ProductId = dataCreate.ProductId,
-                Quantity = dataCreate.Quantity,
+                UserId = request.UserId,
+                ProductId = request.ProductId,
+                Quantity = request.Quantity,
                 Status = Models.OrderStatusEnum.Pending,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -70,6 +69,20 @@ namespace DotNetService.Domain.Order.Services
         public List<Models.Order> GetAllHasStatusPending()
         {
             return _orderQueryRepository.GetAllHasStatusPending();
+        }
+
+        public void Update(OrderCreateRequest request)
+        {
+            Models.Order data = new Models.Order
+            {
+                UserId = request.UserId,
+                ProductId = request.ProductId,
+                Quantity = request.Quantity,
+                Status = Models.OrderStatusEnum.Pending,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            _orderStoreRepository.Update(data);
         }
     }
 }

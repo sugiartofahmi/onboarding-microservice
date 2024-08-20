@@ -1,6 +1,5 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Services;
-using DotNetService.Domain.Order.Repositories;
 using DotNetService.Domain.Order.Requests;
 using DotNetService.Domain.Order.Services;
 using DotNetService.Infrastructure.Shareds;
