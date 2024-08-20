@@ -1,7 +1,5 @@
 using DotNetService.Constants.Event;
 using DotNetService.Domain.Logging.Listeners;
-using DotNetService.Domain.Order.Listeners;
-// using DotNetService.Handlers.Order;
 using DotNetService.Infrastructure.Integrations.NATs;
 
 namespace DotNetService.Infrastructure.BackgroundHosted
@@ -39,15 +37,6 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             );
 
             /*==================== Other Module ====================*/
-
-            natsIntegration.InitListenTask<OrderCreateListen>(
-                serviceScopeFactory,
-                natsIntegration.Subject(
-                    NATsEventModuleEnum.ORDER,
-                    NATsEventActionEnum.CREATE,
-                    NATsEventStatusEnum.SUCCESS
-                )
-            );
         }
 
         public void ListenAndReply()
@@ -65,23 +54,6 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             );
 
             /*==================== Other Module ====================*/
-
-            natsIntegration.InitListenAndReplyTask<OrderListListen>(
-                serviceScopeFactory,
-                natsIntegration.Subject(
-                    NATsEventModuleEnum.ORDER,
-                    NATsEventActionEnum.GET,
-                    NATsEventStatusEnum.REQUEST
-                )
-            );
-            natsIntegration.InitListenAndReplyTask<OrderDetailListen>(
-                serviceScopeFactory,
-                natsIntegration.Subject(
-                    NATsEventModuleEnum.ORDER,
-                    NATsEventActionEnum.GET_BY_ID,
-                    NATsEventStatusEnum.REQUEST
-                )
-            );
         }
     }
 }

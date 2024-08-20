@@ -1,5 +1,4 @@
 using DotNetService.Domain.Logging.Services;
-using DotNetService.Domain.Order.Services;
 
 namespace DotNetService
 {
@@ -7,7 +6,7 @@ namespace DotNetService
     {
         public void Services(IServiceCollection services)
         {
-            services.AddScoped<OrderService>();
+            // services.AddScoped<OrderService>();
             services.AddScoped<LoggingService>();
         }
     }
