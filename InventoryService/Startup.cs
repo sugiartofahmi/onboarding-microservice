@@ -198,7 +198,7 @@ namespace DotNetService
                     ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"])
                     : 1024;
 
-            services.AddDbContextPool<OrderDBContext>(
+            services.AddDbContextPool<ProductDBContext>(
                 options =>
                     options.UseSqlServer(
                         Configuration["ConnectionString:DefaultConnection1"] ?? ""
