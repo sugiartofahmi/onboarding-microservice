@@ -1,14 +1,14 @@
-using DotNetService.Http.API.Version1.Auth;
-using DotNetService.Domain.User.Repositories;
-using DotNetService.Domain.Role.Repositories;
+using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Permission.Repositories;
+using DotNetService.Domain.Role.Repositories;
 using DotNetService.Domain.RolePermission.Repositories;
+using DotNetService.Domain.User.Repositories;
 using DotNetService.Domain.UserRole.Repositories;
 using DotNetService.Exceptions;
-using BC = BCrypt.Net.BCrypt;
+using DotNetService.Http.API.Version1.Auth;
 using DotNetService.Infrastructure.Shareds;
 using Newtonsoft.Json;
-using DotNetService.Domain.Auth.Util;
+using BC = BCrypt.Net.BCrypt;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -21,14 +21,16 @@ namespace DotNetService.Domain.Auth.Services
         RolePermissionQueryRepository rolePermissionQueryRepository,
         IConfiguration config,
         IHttpContextAccessor httpContextAccessor
-        )
+    )
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
         private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
-        private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
+        private readonly PermissionQueryRepository _permissionQueryRepository =
+            permissionQueryRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
+        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository =
+            rolePermissionQueryRepository;
         private readonly IConfiguration _config = config;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -36,7 +38,6 @@ namespace DotNetService.Domain.Auth.Services
         {
             var user = _userQueryRepository.FindOneByEmail(authSignIn.Email);
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
-
             if (user == null || !isPasswordVerified)
             {
                 throw new DataNotFoundException();
@@ -51,25 +52,33 @@ namespace DotNetService.Domain.Auth.Services
             return new()
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt)
+                Token = AuthUtility.GenerateJwtToken(
+                    _config["JWTSetting:Secret"],
+                    userString,
+                    expiredAt
+                )
             };
         }
 
         public void Register(AuthRegisterRequest authRegister)
         {
-            Models.User data = new()
-            {
-                Name = authRegister.Name,
-                Email = authRegister.Email,
-                Password = BC.HashPassword(authRegister.Password)
-            };
+            Models.User data =
+                new()
+                {
+                    Name = authRegister.Name,
+                    Email = authRegister.Email,
+                    Password = BC.HashPassword(authRegister.Password)
+                };
 
             _userStoreRepository.Create(data);
         }
 
         public Models.User Account()
         {
-            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
+            _ = Guid.TryParse(
+                _httpContextAccessor.HttpContext.User.FindFirst("id")?.Value,
+                out Guid userId
+            );
             return _userQueryRepository.FindOneById(userId);
         }
 
@@ -87,7 +96,10 @@ namespace DotNetService.Domain.Auth.Services
             Guid roleId = roleRepository.Id;
             Guid permissionId = permissionRepository.Id;
 
-            var rolePermission = _rolePermissionQueryRepository.FindByRoleAndPermission(roleId, permissionId);
+            var rolePermission = _rolePermissionQueryRepository.FindByRoleAndPermission(
+                roleId,
+                permissionId
+            );
             return rolePermission != null;
         }
     }

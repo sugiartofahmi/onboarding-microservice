@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using DotNetService.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Models
@@ -32,6 +33,8 @@ namespace DotNetService.Models
             SoftDelete<RolePermission>(modelBuilder);
 
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+
+            new UserSeeder(modelBuilder);
         }
 
         public override int SaveChanges()
