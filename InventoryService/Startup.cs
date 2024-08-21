@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json.Serialization;
 using DotNetService.Constants.Logger;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.BackgroundHosted;

@@ -1,5 +1,4 @@
 using DotNetService.Domain.Logging.Listeners;
-using DotNetService.Domain.Order.Listeners;
 
 namespace DotNetService
 {
@@ -9,9 +8,6 @@ namespace DotNetService
         {
             services.AddScoped<LoggingNATsListen>();
             services.AddScoped<LoggingNATsListenAndReply>();
-            services.AddScoped<OrderCreateListen>();
-            services.AddScoped<OrderListListen>();
-            services.AddScoped<OrderDetailListen>();
         }
     }
 }

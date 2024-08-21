@@ -1,10 +1,10 @@
-using DotNetService.Infrastructure.Shareds;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
-using DotNetService.Constants.Logger;
 using System.Net;
-using DotNetService.Http.API.Version1;
 using System.Net.Mime;
+using DotNetService.Constants.Logger;
+using DotNetService.Http.API.Version1;
+using DotNetService.Infrastructure.Shareds;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Exceptions
 {
@@ -17,7 +17,6 @@ namespace DotNetService.Exceptions
         private readonly RequestDelegate _next = next;
         private readonly IConfiguration _config = config;
         private readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.ERROR);
-
 
         public async Task Invoke(HttpContext context)
         {
@@ -86,22 +85,26 @@ namespace DotNetService.Exceptions
                         statusCode = HttpStatusCode.InternalServerError;
                         var errorFormat = new Dictionary<string, string>
                         {
-                            {"Type", error.GetType().ToString()},
-                            {"Message", error.Message},
-                            {"Source", error.Source}
+                            { "Type", error.GetType().ToString() },
+                            { "Message", error.Message },
+                            { "Source", error.Source }
                         };
-                        if (config["App:Environment"] == "Development")
+                        if (_config["App:Environment"] == "Development")
                         {
                             errorFormat.Add("StackTrace", error.StackTrace);
                         }
                         break;
                 }
 
-
                 context.Response.StatusCode = (int)statusCode;
                 context.Response.ContentType = MediaTypeNames.Application.Json;
 
-                var errorResponseValidation = new ApiResponseError(statusCode, errorMessage, validationError, stackTrace);
+                var errorResponseValidation = new ApiResponseError(
+                    statusCode,
+                    errorMessage,
+                    validationError,
+                    stackTrace
+                );
                 await context.Response.WriteAsync(Utils.JsonSerialize(errorResponseValidation));
             }
         }

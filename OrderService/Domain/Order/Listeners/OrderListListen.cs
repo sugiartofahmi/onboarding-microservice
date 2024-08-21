@@ -18,7 +18,7 @@ namespace DotNetService.Domain.Order.Listeners
 
         public readonly OrderService _orderService = orderService;
 
-        public async Task<IDictionary<string, object>> Reply(IDictionary<string, object> data)
+        public IDictionary<string, object> Reply(IDictionary<string, object> data)
         {
             var request = Utils.JsonDeserialize<Query>(Utils.JsonSerialize(data));
             var response = _orderService.Index(request);
