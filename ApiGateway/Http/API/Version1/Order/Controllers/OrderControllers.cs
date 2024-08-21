@@ -33,8 +33,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirst("id")?.Value;
-            Console.WriteLine("userId:");
-            Console.WriteLine(userId);
             request.UserId = new Guid(userId);
             await _orderService.Create(request);
             return new ApiResponseData(HttpStatusCode.OK, null);
