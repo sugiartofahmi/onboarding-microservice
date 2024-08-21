@@ -28,8 +28,6 @@ namespace DotNetService.Domain.Order.Listeners
             var jsonData = Utils.JsonSerialize(data);
             var request = Utils.JsonDeserialize<OrderCheckProductResponse>(jsonData);
             Guid OrderId = new Guid(request.OrderId);
-            Console.WriteLine("OrderId:");
-            Console.WriteLine(request.OrderId);
             var order = _orderService.DetailById(OrderId);
 
             var updateOrder = new OrderUpdateRequest
