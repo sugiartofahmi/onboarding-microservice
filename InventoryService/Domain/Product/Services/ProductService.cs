@@ -12,7 +12,7 @@ namespace DotNetService.Domain.Product.Services
         private readonly ProductQueryRepository _productQueryRepository = productQueryRepository;
         private readonly ProductStoreRepository _productStoreRepository = productStoreRepository;
 
-        public async Task<PaginationModel> Index(ProductQueryRequest query = null)
+        public PaginationModel Index(ProductQueryRequest query = null)
         {
             var data = _productQueryRepository.Pagination(query);
             int count = _productQueryRepository.Count(query);

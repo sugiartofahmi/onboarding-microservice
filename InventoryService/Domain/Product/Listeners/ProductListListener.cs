@@ -20,7 +20,7 @@ namespace DotNetService.Domain.Product.Listeners
         public async Task<IDictionary<string, object>> Reply(IDictionary<string, object> data)
         {
             var request = Utils.JsonDeserialize<ProductQueryRequest>(Utils.JsonSerialize(data));
-            var response = await _productService.Index(request);
+            var response = _productService.Index(request);
 
             return new Dictionary<string, object>
             {
