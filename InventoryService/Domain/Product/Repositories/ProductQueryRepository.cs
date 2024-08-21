@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DotNetService.Domain.Product.Requests;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;

@@ -1,5 +1,4 @@
 using DotNetService.Infrastructure.Databases;
-using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Order.Repositories
 {

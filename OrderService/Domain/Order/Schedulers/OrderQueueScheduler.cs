@@ -5,7 +5,6 @@ using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.Shareds;
-using Newtonsoft.Json;
 
 namespace DotNetService.Domain.Order.Schedulers
 {

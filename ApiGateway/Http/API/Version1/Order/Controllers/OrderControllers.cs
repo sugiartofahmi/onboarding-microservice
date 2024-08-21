@@ -1,9 +1,7 @@
 using System.Net;
-using System.Security.Claims;
 using DotNetService.Domain.Order.Services;
 using DotNetService.Http.API.Version1.Order.Requests;
 using DotNetService.Infrastructure.Shareds;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Http.API.Version1.Order.Controllers

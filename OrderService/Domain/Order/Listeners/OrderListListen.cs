@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Order.Services;

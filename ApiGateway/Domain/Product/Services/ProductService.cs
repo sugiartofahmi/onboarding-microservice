@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using DotNetService.Constants.Event;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Product.Requests;
