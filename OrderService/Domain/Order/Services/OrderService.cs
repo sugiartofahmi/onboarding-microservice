@@ -1,6 +1,10 @@
+using DotNetService.Constants.Event;
 using DotNetService.Domain.Order.Repositories;
 using DotNetService.Domain.Order.Requests;
 using DotNetService.Http.API.Version1;
+using DotNetService.Http.API.Version1.Order.Requests;
+using DotNetService.Infrastructure.Integrations.NATs;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Order.Services
 {
@@ -10,14 +14,24 @@ namespace DotNetService.Domain.Order.Services
 
         private readonly OrderStoreRepository _orderStoreRepository;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        private readonly NATsIntegration _natsIntegration;
+
         public OrderService(
             OrderQueryRepository orderQueryRepository,
-            OrderStoreRepository orderStoreRepository
+            OrderStoreRepository orderStoreRepository,
+            IHttpContextAccessor httpContextAccessor,
+            NATsIntegration natsIntegration
         )
         {
             _orderQueryRepository = orderQueryRepository;
 
             _orderStoreRepository = orderStoreRepository;
+
+            _httpContextAccessor = httpContextAccessor;
+
+            _natsIntegration = natsIntegration;
         }
 
         public PaginationModel Index(Query query = null)
@@ -52,18 +66,38 @@ namespace DotNetService.Domain.Order.Services
             _orderStoreRepository.Delete(id);
         }
 
-        public void Create(OrderCreateRequest request)
+        public async Task Create(OrderCreateRequest request)
         {
+            //Create order
             Models.Order data = new Models.Order
             {
-                UserId = request.UserId,
+                Id = Guid.NewGuid(),
                 ProductId = request.ProductId,
                 Quantity = request.Quantity,
                 Status = Models.OrderStatusEnum.Pending,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
+                // UserId = new Guid(_httpContextAccessor?.HttpContext?.User.FindFirst("id")?.Value)
+                UserId = Guid.NewGuid()
             };
-            _orderStoreRepository.Create(data);
+
+            await _orderStoreRepository.Create(data);
+
+            // Pulblish event to get product availability
+            string subject = _natsIntegration.Subject(
+                NATsEventModuleEnum.INVENTORY_PRODUCT,
+                NATsEventActionEnum.GET,
+                NATsEventStatusEnum.INFO
+            );
+
+            var dataRequest = new OrderCheckProductRequest
+            {
+                OrderId = data.Id,
+                ProductId = request.ProductId,
+                Quantity = request.Quantity
+            };
+
+            await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(dataRequest));
         }
 
         public List<Models.Order> GetAllHasStatusPending()

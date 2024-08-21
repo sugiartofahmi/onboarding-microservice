@@ -7,8 +7,8 @@ namespace DotNetService
     {
         public void Services(IServiceCollection services)
         {
-            services.AddScoped<LoggingService>();
             services.AddScoped<ProductService>();
+            services.AddScoped<LoggingService>();
         }
     }
 }

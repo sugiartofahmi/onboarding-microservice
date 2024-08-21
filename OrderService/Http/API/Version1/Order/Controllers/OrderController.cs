@@ -32,9 +32,9 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ApiResponse Create(OrderCreateRequest request)
+        public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
-            _orderService.Create(request);
+            await _orderService.Create(request);
 
             return new ApiResponseData(HttpStatusCode.OK, null);
         }

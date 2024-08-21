@@ -16,7 +16,7 @@ namespace DotNetService.Domain.Order.Repositories
             _context = context;
         }
 
-        public void Create(Models.Order data)
+        public async Task Create(Models.Order data)
         {
             _context.Orders.Add(data);
             _context.SaveChangesAsync();
