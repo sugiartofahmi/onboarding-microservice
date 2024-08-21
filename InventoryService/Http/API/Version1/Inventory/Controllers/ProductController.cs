@@ -2,6 +2,7 @@ using System.Net;
 using DotNetService.Domain.Inventory.Requests;
 using DotNetService.Domain.Inventory.Services;
 using DotNetService.Infrastructure.Shareds;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Http.API.Version1.Inventory.Controllers
@@ -13,9 +14,12 @@ namespace DotNetService.Http.API.Version1.Inventory.Controllers
         private readonly ProductService _productService = productService;
 
         [HttpGet]
-        public async Task<ApiResponsePagination> Index(ProductQueryRequest request)
+        [AllowAnonymous]
+        public ApiResponsePagination Index(ProductQueryRequest request)
         {
-            return new ApiResponsePagination(HttpStatusCode.OK, null);
+            PaginationModel result = _productService.Index(request);
+
+            return new ApiResponsePagination(HttpStatusCode.OK, result);
         }
     }
 }

@@ -1,3 +1,4 @@
+using DotNetService.Domain.Inventory.Services;
 using DotNetService.Domain.Logging.Services;
 
 namespace DotNetService
@@ -7,6 +8,7 @@ namespace DotNetService
         public void Services(IServiceCollection services)
         {
             services.AddScoped<LoggingService>();
+            services.AddScoped<ProductService>();
         }
     }
 }
