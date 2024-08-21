@@ -8,11 +8,16 @@ using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Order.Services
 {
-    public class OrderService(NATsIntegration natsIntegration)
+    public class OrderService(
+        NATsIntegration natsIntegration,
+        IHttpContextAccessor httpContextAccessor
+    )
     {
         private readonly NATsIntegration _natsIntegration = natsIntegration;
 
-        public async Task<ApiResponsePagination> Index(Query request)
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+        public async Task<PaginationModel> Index(Query request)
         {
             string subject = _natsIntegration.Subject(
                 NATsEventModuleEnum.ORDER,
@@ -27,17 +32,14 @@ namespace DotNetService.Domain.Order.Services
 
             var repliedData = result.result;
 
-            return new ApiResponsePagination(
-                HttpStatusCode.OK,
-                new PaginationModel
-                {
-                    Data = repliedData.Data,
-                    Total = repliedData.Total,
-                    Page = repliedData.Page,
-                    PerPage = repliedData.PerPage,
-                    TotalPage = repliedData.TotalPage
-                }
-            );
+            return new PaginationModel
+            {
+                Data = repliedData.Data,
+                Total = repliedData.Total,
+                Page = repliedData.Page,
+                PerPage = repliedData.PerPage,
+                TotalPage = repliedData.TotalPage
+            };
         }
 
         public async Task<object> Detail(Guid id)
@@ -56,6 +58,9 @@ namespace DotNetService.Domain.Order.Services
 
         public async Task Create(OrderCreateRequest request)
         {
+            string userId = _httpContextAccessor.HttpContext.User.FindFirst("id")?.Value;
+            request.UserId = new Guid(userId);
+
             string subject = _natsIntegration.Subject(
                 NATsEventModuleEnum.ORDER,
                 NATsEventActionEnum.CREATE,

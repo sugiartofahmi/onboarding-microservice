@@ -8,18 +8,15 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
 {
     [ApiController]
     [Route("api/v1/orders")]
-    public class OrderControllers(
-        OrderService orderService,
-        IHttpContextAccessor httpContextAccessor
-    ) : ControllerBase
+    public class OrderControllers(OrderService orderService) : ControllerBase
     {
         private readonly OrderService _orderService = orderService;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         [HttpGet]
         public async Task<ApiResponsePagination> Index(Query request)
         {
-            return await _orderService.Index(request);
+            PaginationModel result = await _orderService.Index(request);
+            return new ApiResponsePagination(HttpStatusCode.OK, result);
         }
 
         [HttpGet("{id}")]
@@ -32,8 +29,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         [HttpPost]
         public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirst("id")?.Value;
-            request.UserId = new Guid(userId);
             await _orderService.Create(request);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
