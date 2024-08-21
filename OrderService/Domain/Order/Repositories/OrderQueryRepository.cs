@@ -23,6 +23,8 @@ namespace DotNetService.Domain.Order.Repositories
 
             var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
 
+            Console.WriteLine("Status:");
+            Console.WriteLine(data[0].Status);
             return data;
         }
 

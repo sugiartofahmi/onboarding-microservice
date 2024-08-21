@@ -1,14 +1,10 @@
 using DotNetService.Applications.RolePermission.Service;
 using DotNetService.Domain.Auth.Services;
-using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Domain.Logging.Services;
-using DotNetService.Domain.Order.Services;
 using DotNetService.Domain.Permission.Services;
-using DotNetService.Domain.Product.Services;
 using DotNetService.Domain.Role.Services;
 using DotNetService.Domain.User.Services;
 using DotNetService.Domain.UserRole.Services;
-using DotNetService.Infrastructure.Events;
 
 namespace DotNetService
 {
@@ -22,9 +18,6 @@ namespace DotNetService
             services.AddScoped<RolePermissionService>();
             services.AddScoped<RoleService>();
             services.AddScoped<UserRoleService>();
-            services.AddScoped<OrderService>();
-
-            services.AddScoped<ProductService>();
 
             services.AddScoped<LoggingService>();
         }

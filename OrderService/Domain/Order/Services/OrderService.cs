@@ -77,8 +77,7 @@ namespace DotNetService.Domain.Order.Services
                 Status = Models.OrderStatusEnum.Pending,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                // UserId = new Guid(_httpContextAccessor?.HttpContext?.User.FindFirst("id")?.Value)
-                UserId = Guid.NewGuid()
+                UserId = new Guid(_httpContextAccessor?.HttpContext?.User.FindFirst("id")?.Value)
             };
 
             await _orderStoreRepository.Create(data);

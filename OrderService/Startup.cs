@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NATS.Client.Core;
 using NATS.Client.Hosting;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
@@ -224,6 +225,7 @@ namespace DotNetService
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy()
                     };
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
             var circuitBreakerPolicy = GetCircuitBreakerPolicy();

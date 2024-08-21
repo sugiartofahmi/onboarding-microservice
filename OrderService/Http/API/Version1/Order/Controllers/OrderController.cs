@@ -2,7 +2,6 @@ using System.Net;
 using DotNetService.Domain.Order.Requests;
 using DotNetService.Domain.Order.Services;
 using DotNetService.Infrastructure.Shareds;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Http.API.Version1.Order.Controllers
@@ -14,7 +13,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         private readonly OrderService _orderService = orderService;
 
         [HttpGet]
-        [AllowAnonymous]
         public ApiResponsePagination Index(Query request)
         {
             PaginationModel result = _orderService.Index(request);
@@ -22,7 +20,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public ApiResponse Detail(Guid id)
         {
             Models.Order data = _orderService.DetailById(id);
@@ -31,7 +28,6 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<ApiResponse> Create(OrderCreateRequest request)
         {
             await _orderService.Create(request);
