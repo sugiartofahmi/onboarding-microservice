@@ -20,8 +20,8 @@ Dot Net Microservice Onboarding [DOT Indonesia](https://www.dot.co.id/)
 # Change directory to microservice apps
 $ cd OrderService
 
-# Run watch mode
-$ dotnet watch run
+# Run in watch mode and adjust the port to avoid conflicts with other applications
+$ dotnet watch run dotnet watch run --urls="http://localhost:5000"
 ```
 
 ## Endpoints
@@ -37,3 +37,4 @@ $ dotnet watch run
 
 - [Postman](https://documenter.getpostman.com/view/28846904/2sA3sAhTLs)
 - [DB Diagram](https://dbdiagram.io/d/Dotnet-Microservices-66b9a75c8b4bb5230ed724e2)
+- [Excalidraw](https://excalidraw.com/#json=54kQyBH87vEe1l6Nn7FQo,d1oXhFFjsmrq7uICiLNopQ)
