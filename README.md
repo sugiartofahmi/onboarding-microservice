@@ -10,7 +10,7 @@ Dot Net Microservice Onboarding [DOT Indonesia](https://www.dot.co.id/)
 
 ## Directory Structure
 
-- ApiGateway
+- IamService
 - OrderService
 - InventoryService
 
