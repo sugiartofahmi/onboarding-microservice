@@ -7,7 +7,7 @@ namespace DotNetService.Http.API.Version1.Order.Responses
 {
     public class OrderCheckProductResponse
     {
-        public string OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public bool IsProductAvailable { get; set; }
     }
 }

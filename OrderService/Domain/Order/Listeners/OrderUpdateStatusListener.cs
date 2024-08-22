@@ -27,12 +27,11 @@ namespace DotNetService.Domain.Order.Listeners
         {
             var jsonData = Utils.JsonSerialize(data);
             var request = Utils.JsonDeserialize<OrderCheckProductResponse>(jsonData);
-            Guid OrderId = new Guid(request.OrderId);
-            var order = _orderService.DetailById(OrderId);
+            var order = _orderService.DetailById(request.OrderId);
 
             var updateOrder = new OrderUpdateRequest
             {
-                Id = OrderId,
+                Id = order.Id,
                 Status = (OrderStatusEnum)order.Status,
                 UserId = order.UserId,
                 ProductId = order.ProductId,
@@ -49,7 +48,7 @@ namespace DotNetService.Domain.Order.Listeners
                 updateOrder.Status = OrderStatusEnum.Accepted;
             }
 
-            _orderService.Update(updateOrder);
+            _ = _orderService.Update(updateOrder);
 
             _logger.LogInformation(jsonData);
         }
