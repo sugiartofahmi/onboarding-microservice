@@ -19,15 +19,15 @@ namespace DotNetService.Domain.Order.Repositories
         public async Task Create(Models.Order data)
         {
             _context.Orders.Add(data);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            Models.Order data = _orderQueryRepository.FindOneById(id, true);
+            Models.Order data = await _orderQueryRepository.FindOneById(id, true);
 
             _context.Orders.Remove(data);
-            int affectedRows = _context.SaveChanges();
+            int affectedRows = await _context.SaveChangesAsync();
 
             if (affectedRows == 0)
             {
@@ -35,14 +35,14 @@ namespace DotNetService.Domain.Order.Repositories
             }
         }
 
-        public void Update(Models.Order data)
+        public async Task Update(Models.Order data)
         {
-            var existingOrder = _context.Orders.Find(data.Id);
+            var existingOrder = await _orderQueryRepository.FindOneById(data.Id, true);
 
             if (existingOrder != null)
             {
                 _context.Entry(existingOrder).CurrentValues.SetValues(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else
             {

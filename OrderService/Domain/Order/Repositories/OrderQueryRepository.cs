@@ -14,14 +14,14 @@ namespace DotNetService.Domain.Order.Repositories
             _context = context;
         }
 
-        public List<Models.Order> Pagination(Query queryParams)
+        public async Task<List<Models.Order>> Pagination(Query queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Orders.AsQueryable();
 
             query = this.QuerySort(query, queryParams);
 
-            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
@@ -58,21 +58,24 @@ namespace DotNetService.Domain.Order.Repositories
             return query;
         }
 
-        public int Count(Query queryParams)
+        public async Task<int> Count(Query queryParams)
         {
             IQueryable<Models.Order> query = _context.Orders;
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
-        internal Models.Order Find(Guid id = default)
+        internal async Task<Models.Order> Find(Guid id = default)
         {
-            return _context.Orders.Where(role => role.Id == id).FirstOrDefault();
+            return await _context.Orders.Where(role => role.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.Order FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.Order> FindOneById(
+            Guid id = default,
+            bool isThrowException = false
+        )
         {
-            var data = _context.Orders.Where(data => data.Id == id).FirstOrDefault();
+            var data = await _context.Orders.Where(data => data.Id == id).FirstOrDefaultAsync();
 
             if (data == null && isThrowException)
             {
@@ -83,29 +86,21 @@ namespace DotNetService.Domain.Order.Repositories
             return data;
         }
 
-        public List<Models.Order> Get(string search, int page, int perPage)
+        public async Task<List<Models.Order>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.Order> roles;
             IQueryable<Models.Order> roleQuery = _context.Orders;
 
-            roles = roleQuery.Skip(skip).Take(perPage).ToList();
+            roles = await roleQuery.Skip(skip).Take(perPage).ToListAsync();
             return roles;
         }
 
-        public int CountAll(string search)
+        public async Task<int> CountAll(string search)
         {
             IQueryable<Models.Order> roleQuery = _context.Orders;
 
-            return roleQuery.Count();
-        }
-
-        public List<Models.Order> GetAllHasStatusPending()
-        {
-            return _context
-                .Orders.AsNoTracking()
-                .Where(o => o.Status == Models.OrderStatusEnum.Pending)
-                .ToList();
+            return await roleQuery.CountAsync();
         }
     }
 }

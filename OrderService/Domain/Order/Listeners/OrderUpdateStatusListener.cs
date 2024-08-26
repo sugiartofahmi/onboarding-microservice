@@ -23,11 +23,11 @@ namespace DotNetService.Domain.Order.Listeners
         private readonly OrderService _orderService = orderService;
         public readonly NATsIntegration _natsIntegration = _natsIntegration;
 
-        public void Handle(IDictionary<string, object> data)
+        public async void Handle(IDictionary<string, object> data)
         {
             var jsonData = Utils.JsonSerialize(data);
             var request = Utils.JsonDeserialize<OrderCheckProductResponse>(jsonData);
-            var order = _orderService.DetailById(request.OrderId);
+            var order = await _orderService.DetailById(request.OrderId);
 
             var updateOrder = new OrderUpdateRequest
             {
@@ -48,7 +48,7 @@ namespace DotNetService.Domain.Order.Listeners
                 updateOrder.Status = OrderStatusEnum.Accepted;
             }
 
-            _ = _orderService.Update(updateOrder);
+            await _orderService.Update(updateOrder);
 
             _logger.LogInformation(jsonData);
         }

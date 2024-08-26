@@ -34,10 +34,10 @@ namespace DotNetService.Domain.Order.Services
             _natsIntegration = natsIntegration;
         }
 
-        public PaginationModel Index(Query query = null)
+        public async Task<PaginationModel> Index(Query query = null)
         {
             var data = this.Pagination(query);
-            int count = _orderQueryRepository.Count(query);
+            int count = await _orderQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
             PaginationModel paginate =
                 new()
@@ -51,19 +51,19 @@ namespace DotNetService.Domain.Order.Services
             return paginate;
         }
 
-        public List<Models.Order> Pagination(Query query = null)
+        public async Task<List<Models.Order>> Pagination(Query query = null)
         {
-            return _orderQueryRepository.Pagination(query);
+            return await _orderQueryRepository.Pagination(query);
         }
 
-        public Models.Order DetailById(Guid id)
+        public async Task<Models.Order> DetailById(Guid id)
         {
-            return _orderQueryRepository.FindOneById(id);
+            return await _orderQueryRepository.FindOneById(id);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _orderStoreRepository.Delete(id);
+            await _orderStoreRepository.Delete(id);
         }
 
         public async Task Create(OrderCreateRequest request)
@@ -99,12 +99,7 @@ namespace DotNetService.Domain.Order.Services
             await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(dataRequest));
         }
 
-        public List<Models.Order> GetAllHasStatusPending()
-        {
-            return _orderQueryRepository.GetAllHasStatusPending();
-        }
-
-        public async Task<bool> Update(OrderUpdateRequest request)
+        public async Task Update(OrderUpdateRequest request)
         {
             var update = new Models.Order
             {
@@ -116,8 +111,7 @@ namespace DotNetService.Domain.Order.Services
                 UpdatedAt = DateTime.Now,
             };
 
-            _orderStoreRepository.Update(update);
-            return true;
+            await _orderStoreRepository.Update(update);
         }
     }
 }

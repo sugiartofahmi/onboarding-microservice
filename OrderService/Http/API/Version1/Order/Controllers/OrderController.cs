@@ -13,16 +13,16 @@ namespace DotNetService.Http.API.Version1.Order.Controllers
         private readonly OrderService _orderService = orderService;
 
         [HttpGet]
-        public ApiResponsePagination Index(Query request)
+        public async Task<ApiResponsePagination> Index(Query request)
         {
-            PaginationModel result = _orderService.Index(request);
+            PaginationModel result = await _orderService.Index(request);
             return new ApiResponsePagination(HttpStatusCode.OK, result);
         }
 
         [HttpGet("{id}")]
-        public ApiResponse Detail(Guid id)
+        public async Task<ApiResponse> Detail(Guid id)
         {
-            Models.Order data = _orderService.DetailById(id);
+            Models.Order data = await _orderService.DetailById(id);
 
             return new ApiResponseData(HttpStatusCode.OK, data);
         }
