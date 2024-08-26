@@ -24,12 +24,12 @@ namespace DotNetService.Domain.Inventory.Listeners
 
         private readonly NATsIntegration _natsIntegration = _natsIntegration;
 
-        public void Handle(IDictionary<string, object> data)
+        public async void Handle(IDictionary<string, object> data)
         {
             var jsonData = Utils.JsonSerialize(data);
             var request = Utils.JsonDeserialize<ProductCheckAvailabilityRequest>(jsonData);
             Guid ProductId = new Guid(request.ProductId);
-            var product = _productService.Detail(ProductId);
+            var product = await _productService.Detail(ProductId);
             var response = new ProductCheckAvailabilityResponse { OrderId = request.OrderId, };
 
             if (product is null || product.Stock < request.Quantity)
@@ -46,7 +46,7 @@ namespace DotNetService.Domain.Inventory.Listeners
                     Price = (int)product.Price,
                     Stock = (int)(product.Stock - request.Quantity)
                 };
-                _productService.Update(product.Id, updateProduct);
+                await _productService.Update(product.Id, updateProduct);
                 response.IsProductAvailable = true;
             }
 
@@ -56,7 +56,7 @@ namespace DotNetService.Domain.Inventory.Listeners
                 NATsEventStatusEnum.SUCCESS
             );
 
-            _ = _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(response));
+            await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(response));
 
             _logger.LogInformation(jsonData);
         }

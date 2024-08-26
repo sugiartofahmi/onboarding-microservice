@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using DotNetService.Domain.Inventory.Requests;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
@@ -14,7 +15,7 @@ namespace DotNetService.Domain.Inventory.Repositories
             _context = context;
         }
 
-        public List<Models.Product> Pagination(ProductQueryRequest queryParams)
+        public async Task<List<Models.Product>> Pagination(ProductQueryRequest queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Products.AsQueryable();
@@ -23,7 +24,7 @@ namespace DotNetService.Domain.Inventory.Repositories
             query = this.QueryFilter(query, queryParams);
             query = this.QuerySort(query, queryParams);
 
-            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
@@ -90,24 +91,27 @@ namespace DotNetService.Domain.Inventory.Repositories
             return query;
         }
 
-        public int Count(ProductQueryRequest queryParams)
+        public async Task<int> Count(ProductQueryRequest queryParams)
         {
             IQueryable<Models.Product> query = _context.Products;
 
             query = this.QuerySearch(query, queryParams);
             query = this.QueryFilter(query, queryParams);
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
-        internal Models.Product Find(Guid id = default)
+        internal async Task<Models.Product> Find(Guid id = default)
         {
-            return _context.Products.Where(role => role.Id == id).FirstOrDefault();
+            return await _context.Products.Where(role => role.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.Product FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.Product> FindOneById(
+            Guid id = default,
+            bool isThrowException = false
+        )
         {
-            var data = _context.Products.Where(data => data.Id == id).FirstOrDefault();
+            var data = await _context.Products.Where(data => data.Id == id).FirstOrDefaultAsync();
 
             if (data == null && isThrowException)
             {
@@ -118,11 +122,12 @@ namespace DotNetService.Domain.Inventory.Repositories
             return data;
         }
 
-        public Models.Product FindByName(string name)
+        public async Task<Models.Product> FindByName(string name)
         {
-            Models.Product role = _context
+            Models.Product role = await _context
                 .Products.Where(role => role.Name == name)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+
             if (role == null)
             {
                 return (new Models.Product());
@@ -131,15 +136,15 @@ namespace DotNetService.Domain.Inventory.Repositories
             return role;
         }
 
-        public bool IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
+        public async Task<bool> IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
         {
-            return _context
+            return await _context
                     .Products.Where(role => role.Name == nameRole)
                     .Where(role => roleIds.Contains(role.Id))
-                    .Count() > 0;
+                    .CountAsync() > 0;
         }
 
-        public List<Models.Product> Get(string search, int page, int perPage)
+        public async Task<List<Models.Product>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.Product> roles;
@@ -148,18 +153,18 @@ namespace DotNetService.Domain.Inventory.Repositories
             {
                 roleQuery = roleQuery.Where(role => role.Name.Contains(search));
             }
-            roles = roleQuery.Skip(skip).Take(perPage).ToList();
+            roles = await roleQuery.Skip(skip).Take(perPage).ToListAsync();
             return roles;
         }
 
-        public int CountAll(string search)
+        public async Task<int> CountAll(string search)
         {
             IQueryable<Models.Product> roleQuery = _context.Products;
             if (search != null)
             {
                 roleQuery = roleQuery.Where(role => role.Name.Contains(search));
             }
-            return roleQuery.Count();
+            return await roleQuery.CountAsync();
         }
     }
 }

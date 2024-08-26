@@ -12,10 +12,10 @@ namespace DotNetService.Domain.Inventory.Services
         private readonly ProductQueryRepository _productQueryRepository = productQueryRepository;
         private readonly ProductStoreRepository _productStoreRepository = productStoreRepository;
 
-        public PaginationModel Index(ProductQueryRequest query = null)
+        public async Task<PaginationModel> Index(ProductQueryRequest query = null)
         {
             var data = _productQueryRepository.Pagination(query);
-            int count = _productQueryRepository.Count(query);
+            int count = await _productQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
             PaginationModel paginate =
                 new()
@@ -30,7 +30,7 @@ namespace DotNetService.Domain.Inventory.Services
             return paginate;
         }
 
-        public Models.Product Create(ProductCreateRequest request)
+        public async Task<Models.Product> Create(ProductCreateRequest request)
         {
             var data = new Models.Product
             {
@@ -38,17 +38,17 @@ namespace DotNetService.Domain.Inventory.Services
                 Description = request.Description,
                 Price = request.Price,
             };
-            var user = _productStoreRepository.Create(data);
+            var user = await _productStoreRepository.Create(data);
 
-            return this.Detail(user.Id);
+            return await this.Detail(user.Id);
         }
 
-        public Models.Product Detail(Guid id)
+        public async Task<Models.Product> Detail(Guid id)
         {
-            return _productQueryRepository.FindOneById(id, false);
+            return await _productQueryRepository.FindOneById(id, false);
         }
 
-        public Models.Product Update(Guid id, ProductUpdateRequest dataUpdate)
+        public async Task<Models.Product> Update(Guid id, ProductUpdateRequest dataUpdate)
         {
             var data = new Models.Product
             {
@@ -58,14 +58,14 @@ namespace DotNetService.Domain.Inventory.Services
                 Price = dataUpdate.Price,
                 Stock = dataUpdate.Stock
             };
-            var updatedData = _productStoreRepository.Update(id, data);
+            var updatedData = await _productStoreRepository.Update(id, data);
 
-            return this.Detail(updatedData.Id);
+            return await this.Detail(updatedData.Id);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _productStoreRepository.Delete(id);
+            await _productStoreRepository.Delete(id);
         }
     }
 }

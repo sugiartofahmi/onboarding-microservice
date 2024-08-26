@@ -13,9 +13,9 @@ namespace DotNetService.Http.API.Version1.Inventory.Controllers
         private readonly ProductService _productService = productService;
 
         [HttpGet]
-        public ApiResponsePagination Index(ProductQueryRequest request)
+        public async Task<ApiResponsePagination> Index(ProductQueryRequest request)
         {
-            PaginationModel result = _productService.Index(request);
+            PaginationModel result = await _productService.Index(request);
 
             return new ApiResponsePagination(HttpStatusCode.OK, result);
         }

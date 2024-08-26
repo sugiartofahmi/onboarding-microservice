@@ -18,7 +18,7 @@ namespace DotNetService.Domain.Inventory.Repositories
             _productQueryRepository = productQueryRepository;
         }
 
-        public Models.Product Create(Models.Product request)
+        public async Task<Models.Product> Create(Models.Product request)
         {
             Models.Product newProduct = new Models.Product
             {
@@ -27,12 +27,12 @@ namespace DotNetService.Domain.Inventory.Repositories
                 Price = request.Price,
             };
 
-            return this.Save(newProduct);
+            return await this.Save(newProduct);
         }
 
-        public Models.Product Update(Guid id, Models.Product request)
+        public async Task<Models.Product> Update(Guid id, Models.Product request)
         {
-            Models.Product product = _productQueryRepository.Find(id);
+            Models.Product product = await _productQueryRepository.Find(id);
             if (product == null)
             {
                 return new Models.Product();
@@ -42,15 +42,15 @@ namespace DotNetService.Domain.Inventory.Repositories
             product.Description = request.Description;
             product.Price = request.Price;
             product.Stock = request.Stock;
-            return this.Save(product, true);
+            return await this.Save(product, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            Models.Product data = _productQueryRepository.FindOneById(id, true);
+            Models.Product data = await _productQueryRepository.FindOneById(id, true);
 
             _context.Products.Remove(data);
-            int affectedRows = _context.SaveChanges();
+            int affectedRows = await _context.SaveChangesAsync();
 
             if (affectedRows == 0)
             {
@@ -58,19 +58,19 @@ namespace DotNetService.Domain.Inventory.Repositories
             }
         }
 
-        private Models.Product Save(Models.Product data, bool isUpdate = false)
+        private async Task<Models.Product> Save(Models.Product data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
                 var dataCreated = _context.Products.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return dataCreated.Entity;
             }
 
             try
             {
                 var dataUpdated = _context.Products.Update(data);
-                int affectedRows = _context.SaveChanges();
+                int affectedRows = await _context.SaveChangesAsync();
 
                 if (affectedRows == 0)
                 {
