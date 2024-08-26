@@ -31,6 +31,9 @@ namespace DotNetService.Domain.Inventory.Listeners
             Guid ProductId = new Guid(request.ProductId);
             var product = await _productService.Detail(ProductId);
             var response = new ProductCheckAvailabilityResponse { OrderId = request.OrderId, };
+            int maxRetryAttempts = 3;
+            int retryDelay = 10000; // 10 second
+            int attempt = 0;
 
             if (product is null || product.Stock < request.Quantity)
             {
@@ -56,7 +59,31 @@ namespace DotNetService.Domain.Inventory.Listeners
                 NATsEventStatusEnum.SUCCESS
             );
 
-            await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(response));
+            while (attempt < maxRetryAttempts)
+            {
+                try
+                {
+                    await _natsIntegration.Publish<string>(subject, Utils.JsonSerialize(response));
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    attempt++;
+                    if (attempt >= maxRetryAttempts)
+                    {
+                        _logger.LogError(
+                            $"Failed to publish after {maxRetryAttempts} attempts: {ex.Message}"
+                        );
+                    }
+                    else
+                    {
+                        _logger.LogError(
+                            $"Attempt {attempt} failed: {ex.Message}. Retrying in {retryDelay}ms..."
+                        );
+                        await Task.Delay(retryDelay);
+                    }
+                }
+            }
 
             _logger.LogInformation(jsonData);
         }

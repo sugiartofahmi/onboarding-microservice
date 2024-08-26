@@ -21,9 +21,7 @@ namespace DotNetService.Domain.Order.Repositories
 
             query = this.QuerySort(query, queryParams);
 
-            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
-
-            return data;
+            return query.Skip(skip).Take(queryParams.PerPage).ToList();
         }
 
         private IQueryable<Models.Order> QuerySort(
@@ -62,12 +60,12 @@ namespace DotNetService.Domain.Order.Repositories
         {
             IQueryable<Models.Order> query = _context.Orders;
 
-            return await query.CountAsync();
+            return query.Count();
         }
 
         internal async Task<Models.Order> Find(Guid id = default)
         {
-            return await _context.Orders.Where(role => role.Id == id).FirstOrDefaultAsync();
+            return _context.Orders.Where(role => role.Id == id).FirstOrDefault();
         }
 
         public async Task<Models.Order> FindOneById(
@@ -75,7 +73,7 @@ namespace DotNetService.Domain.Order.Repositories
             bool isThrowException = false
         )
         {
-            var data = await _context.Orders.Where(data => data.Id == id).FirstOrDefaultAsync();
+            var data = _context.Orders.Where(data => data.Id == id).FirstOrDefault();
 
             if (data == null && isThrowException)
             {
@@ -92,7 +90,7 @@ namespace DotNetService.Domain.Order.Repositories
             List<Models.Order> roles;
             IQueryable<Models.Order> roleQuery = _context.Orders;
 
-            roles = await roleQuery.Skip(skip).Take(perPage).ToListAsync();
+            roles = roleQuery.Skip(skip).Take(perPage).ToList();
             return roles;
         }
 
@@ -100,7 +98,7 @@ namespace DotNetService.Domain.Order.Repositories
         {
             IQueryable<Models.Order> roleQuery = _context.Orders;
 
-            return await roleQuery.CountAsync();
+            return roleQuery.Count();
         }
     }
 }

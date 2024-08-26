@@ -14,7 +14,7 @@ namespace DotNetService.Domain.Inventory.Services
 
         public async Task<PaginationModel> Index(ProductQueryRequest query = null)
         {
-            var data = _productQueryRepository.Pagination(query);
+            var data = await _productQueryRepository.Pagination(query);
             int count = await _productQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
             PaginationModel paginate =

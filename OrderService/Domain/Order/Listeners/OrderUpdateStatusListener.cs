@@ -23,7 +23,7 @@ namespace DotNetService.Domain.Order.Listeners
         private readonly OrderService _orderService = orderService;
         public readonly NATsIntegration _natsIntegration = _natsIntegration;
 
-        public async void Handle(IDictionary<string, object> data)
+        public async Task Handle(IDictionary<string, object> data)
         {
             var jsonData = Utils.JsonSerialize(data);
             var request = Utils.JsonDeserialize<OrderCheckProductResponse>(jsonData);
